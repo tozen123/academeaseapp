@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.LoginActivity"
+    android:padding="46dp"
+    >
+    <LinearLayout
+        android:id="@+id/AppHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome to"
+            android:gravity="center"
+            android:textSize="46dp"
+            >
+
+        </TextView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AcademEase!"
+            android:gravity="center"
+            android:textSize="28dp"
+            >
+
+        </TextView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/LoginTitleHeader"
+
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:gravity="center"
+        android:textSize="38dp"
+
+        android:layout_marginTop="56dp"
+        android:textStyle="bold"
+
+        android:layout_below="@+id/AppHeader"
+        >
+
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/EmailForm"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/LoginTitleHeader"
+        android:orientation="vertical"
+
+        android:layout_margin="16dp"
+        >
+        <EditText
+            android:id="@+id/EmailInputEditText"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="21dp"
+            android:hint="Email/Username"
+            android:background="@drawable/rounded_edit_text"
+            >
+
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/PasswordForm"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/EmailForm"
+        android:orientation="vertical"
+
+        android:layout_margin="16dp"
+        >
+        <EditText
+            android:id="@+id/PasswordInputEditText"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="21dp"
+            android:hint="Password"
+            android:background="@drawable/rounded_edit_text"
+            >
+
+        </EditText>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/ButtonLogin"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="LOGIN"
+        android:layout_below="@+id/PasswordForm"
+
+        >
+
+    </Button>
+</RelativeLayout>

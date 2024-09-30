@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "576932492833",
+    "firebase_url": "https://academease-c5a42-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "academease-c5a42",
+    "storage_bucket": "academease-c5a42.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576932492833:android:e25c6f7a56451ebc6d9560",
+        "android_client_info": {
+          "package_name": "com.doublehammerstudio.academeaseapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAAmEMNwA3LAhwIjZblOKN047ZvtlQuJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576932492833:android:df14124694e5558a6d9560",
+        "android_client_info": {
+          "package_name": "com.example.studentportal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAAmEMNwA3LAhwIjZblOKN047ZvtlQuJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576932492833:android:1e3d272a64d3d85a6d9560",
+        "android_client_info": {
+          "package_name": "com.example.testsubject1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAAmEMNwA3LAhwIjZblOKN047ZvtlQuJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

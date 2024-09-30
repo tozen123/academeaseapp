@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.MainActivity"
+    android:padding="46dp"
+    >
+    <TextView
+        android:id="@+id/titleHeader"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AcademEase"
+        android:gravity="center"
+        android:textSize="48dp"
+        >
+
+    </TextView>
+
+
+
+    <GridLayout
+        android:id="@+id/grid_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleHeader"
+        android:layout_centerHorizontal="true"
+        android:rowCount="2"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:layout_marginTop="34dp">
+
+        <!-- Scan Button -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_columnWeight="1"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/scanButton"
+
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_scan_icon"
+                android:background="@drawable/button_background"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+
+                android:text="SCAN"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- Attendance Button -->
+        <LinearLayout
+
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_columnWeight="1"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/attendanceButton"
+
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_attendance_icon"
+                android:background="@drawable/button_background"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+
+                android:text="ATTENDANCE"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_columnWeight="1"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/registerStudent"
+
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_register_student_icon"
+                android:background="@drawable/button_background"
+                android:padding="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="REGISTER STUDENT"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+    </GridLayout>
+    <TextView
+        android:id="@+id/userEmailText"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="%email%"
+        android:textSize="18dp"
+        android:layout_marginTop="128dp"
+        android:layout_below="@id/grid_layout"
+
+        >
+
+    </TextView>
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userEmailText"
+
+        android:text="Logout">
+
+
+    </Button>
+</RelativeLayout>

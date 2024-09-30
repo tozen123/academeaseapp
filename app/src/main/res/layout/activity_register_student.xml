@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.RegisterStudentActivity"
+
+
+    >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="AcademEase" />
+
+    <LinearLayout
+        android:id="@+id/header"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="46dp"
+        android:layout_below="@+id/toolbar"
+
+        >
+        <TextView
+            android:id="@+id/titleHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register Student"
+            android:textSize="38dp"
+            android:gravity="center"
+            >
+
+        </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/inputs"
+
+        android:layout_below="@+id/header"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:id="@+id/content_container"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                >
+                <ImageView
+                    android:id="@+id/student_image"
+
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:src="@drawable/ic_default_image"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    />
+                <Button
+                    android:id="@+id/take_photo_button"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Take Photo"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="General Information"
+                    android:textSize="18sp"
+
+                    android:textStyle="bold"
+                    android:layout_marginTop="20dp" />
+
+                <EditText
+                    android:id="@+id/lrn_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="LRN"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/last_name_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Last Name" />
+
+                <EditText
+                    android:id="@+id/first_name_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="First Name" />
+
+                <EditText
+                    android:id="@+id/middle_name_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Middle Name" />
+
+                <EditText
+                    android:id="@+id/sex_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Sex" />
+                <EditText
+                    android:id="@+id/birthdate_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Birthdate (YYYY-MM-DD)"
+                    android:inputType="date" />
+
+                <EditText
+                    android:id="@+id/age_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Age" />
+                <EditText
+                    android:id="@+id/birthplace_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Birth Of Place" />
+                <EditText
+                    android:id="@+id/ip_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="IP (Specific and Ethnic Group)" />
+                <EditText
+                    android:id="@+id/address_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Address" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="Name Of Parent Section"
+                    android:textSize="18sp"
+
+                    android:textStyle="bold"
+                    android:layout_marginTop="20dp" />
+                <EditText
+                    android:id="@+id/father_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Father" />
+                <EditText
+                    android:id="@+id/mother_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Mother(Maiden Name)" />
+                <EditText
+                    android:id="@+id/guardian_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Guardian if not parent" />
+                <EditText
+                    android:id="@+id/contact_number_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contact Number (Parent/Guardian)" />
+
+
+                <Spinner
+                    android:id="@+id/section_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+                <Button
+                    android:id="@+id/register_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Register"
+                />
+            </LinearLayout>
+
+
+        </ScrollView>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
