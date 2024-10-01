@@ -339,29 +339,47 @@ public class ScanExamReadyActivity extends AppCompatActivity {
                     try {
                         String responseBody = response.body().string();
 
-                        //save data
+                        JSONObject jsonResponse = new JSONObject(responseBody);
 
-                        Log.d("API Response", "Response: " + responseBody);
-                        showResultDialog("Success", "Upload successful! Result: " + responseBody);
-                    } catch (IOException e) {
+                        String setVal = jsonResponse.getString("set_val");
+                        String digitText = jsonResponse.getString("digit_text").trim().replace(" ", ""); 
+                        int score = jsonResponse.getInt("score");
+                        String rating = jsonResponse.getString("rating");
+
+                        if (digitText.length() != 12) {
+                            showResultDialog("Error", "OMR API Failed to read the LRN, please try to capture again");
+                            return;
+                        }
+
+                        String resultMessage = "Exam Set: " + setVal + "\n"
+                                + "LRN: " + digitText + "\n"
+                                + "Score: " + score + "\n"
+                                + "Rating: " + rating;
+
+                        Log.d("API Response", "Response: " + resultMessage);
+
+                        showResultDialog("Success", resultMessage);
+
+                    } catch (IOException | JSONException e) {
                         e.printStackTrace();
                         showResultDialog("Error", "Error processing response: " + e.getMessage());
                     }
+
                 } else {
                     try {
-                        // Extract error message from the response body
                         String errorBody = response.errorBody().string();
                         JSONObject jsonError = new JSONObject(errorBody);
-                        String errorMessage = jsonError.getString("error");  // Extract the 'error' field from the response
+                        String errorMessage = jsonError.getString("error");
 
                         Log.e("API Response", "Failed: " + errorMessage);
-                        showResultDialog("Error", "Upload failed: " + errorMessage);  // Show the specific error message
+                        showResultDialog("Error", "Upload failed: " + errorMessage);
 
                     } catch (Exception e) {
                         Log.e("API Error", "Error: " + e.getMessage());
                         showResultDialog("Error", "Upload failed with code: " + response.code());
                     }
                 }
+
             }
 
             @Override
