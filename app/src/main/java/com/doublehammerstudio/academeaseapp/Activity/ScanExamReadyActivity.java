@@ -411,7 +411,6 @@ public class ScanExamReadyActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     try {
-                        // Get the response as a string
                         String responseBody = response.body().string();
                         Toast.makeText(ScanExamReadyActivity.this, "API is Accessible: Response: " + responseBody, Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
@@ -431,13 +430,18 @@ public class ScanExamReadyActivity extends AppCompatActivity {
     }
 
 
+
     private Retrofit createRetrofit() {
 
         return new Retrofit.Builder()
-                .baseUrl("http://192.168.1.9:5000/")
+                .baseUrl("http://192.168.1.13:5000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
+
+
+
+
     private void uploadTestImage(File imageFile) {
         Retrofit retrofit = createRetrofit();
         ApiService uploadService = retrofit.create(ApiService.class);

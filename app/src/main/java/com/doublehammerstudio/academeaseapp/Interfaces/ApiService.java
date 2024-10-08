@@ -22,4 +22,8 @@ public interface ApiService {
             @Part MultipartBody.Part image,
             @Part("answers") RequestBody answers
     );
+
+    @GET("/ping")
+    Call<ResponseBody> pingServer();
+
 }
