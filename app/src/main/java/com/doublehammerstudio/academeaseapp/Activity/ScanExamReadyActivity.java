@@ -1,10 +1,14 @@
 package com.doublehammerstudio.academeaseapp.Activity;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +79,13 @@ public class ScanExamReadyActivity extends AppCompatActivity {
     private String currentPhotoPath;
     private Button testHelloButton;
     private TextView testAnswerDocument;
+
+
+    private String currentIpAddress;
+    // Constants for SharedPreferences
+    private static final String PREFS_NAME = "IPPrefs";
+    private static final String KEY_IP_ADDRESS = "192.168.1.1";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +118,12 @@ public class ScanExamReadyActivity extends AppCompatActivity {
             });
 
             capturePhotoButton.setOnClickListener(v1 -> {
-                dispatchTakePictureIntent();
+
+
+                showIpInputDialog();
+
+
+//                dispatchTakePictureIntent();
             });
 //            testHelloButton = findViewById(R.id.testHelloButton);
 //            testHelloButton.setOnClickListener(v1 -> {
@@ -116,7 +132,38 @@ public class ScanExamReadyActivity extends AppCompatActivity {
             return insets;
         });
     }
+    private void showIpInputDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_ip_input, null);
+        final EditText ipEditText = dialogView.findViewById(R.id.ipEditText);
+        final CheckBox rememberCheckBox = dialogView.findViewById(R.id.rememberCheckBox);
 
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String storedIp = sharedPreferences.getString(KEY_IP_ADDRESS, null);
+
+        if (storedIp != null) {
+            ipEditText.setText(storedIp);
+            rememberCheckBox.setChecked(true);
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Enter IP Address")
+                .setView(dialogView)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    String ipAddress = ipEditText.getText().toString();
+                    boolean rememberIp = rememberCheckBox.isChecked();
+
+                    if (rememberIp) {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(KEY_IP_ADDRESS, ipAddress);
+                        editor.apply();
+                    }
+
+                    dispatchTakePictureIntent(ipAddress);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
     private void fetchQuestionsAndShowDialog(String documentId, String selectedSet) {
         db.collection("tests").document(documentId).get().addOnSuccessListener(documentSnapshot -> {
             Log.d("Firestore", "Fetched document: " + documentSnapshot.getId());
@@ -256,7 +303,9 @@ public class ScanExamReadyActivity extends AppCompatActivity {
 
 
 
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent(String ipAddress) {
+        currentIpAddress = ipAddress;
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
@@ -434,7 +483,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
     private Retrofit createRetrofit() {
 
         return new Retrofit.Builder()
-                .baseUrl("http://192.168.1.13:5000/")
+                .baseUrl("http://" + currentIpAddress + ":5000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
