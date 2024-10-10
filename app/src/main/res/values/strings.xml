@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AcademEaseApp</string>
+    <string name="app_name">AcademEase</string>
 
     <string-array name="server_ips">
         <item>192.168.1.1</item>

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -96,12 +97,16 @@ public class ScanExamReadyActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Show the back button
+            getSupportActionBar().setHomeButtonEnabled(true); // Enable the button
+
             testNameTextView = findViewById(R.id.testNameTextView);
             selectedSetTextView = findViewById(R.id.selectedSetTextView);
-            documentIdTextView = findViewById(R.id.documentIdTextView);
             showQuestionsButton = findViewById(R.id.showQuestionsButton);
             capturePhotoButton = findViewById(R.id.capturePhotoButton);
-            testAnswerDocument = findViewById(R.id.testAnswerDocument);
+
 
             String testName = getIntent().getStringExtra("testName");
             String selectedSet = getIntent().getStringExtra("selectedSet");
@@ -109,7 +114,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
 
             testNameTextView.setText("Test: " + testName);
             selectedSetTextView.setText("Selected Set: " + selectedSet);
-            documentIdTextView.setText("Document ID: " + documentId);
+
 
             fetchAnswersOnActivityLoad(documentId, selectedSet);
 
@@ -277,7 +282,6 @@ public class ScanExamReadyActivity extends AppCompatActivity {
         }
         correctAnswersText.append("]");
 
-        testAnswerDocument.setText(correctAnswersText.toString());
     }
 
 
@@ -391,7 +395,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
                         JSONObject jsonResponse = new JSONObject(responseBody);
 
                         String setVal = jsonResponse.getString("set_val");
-                        String digitText = jsonResponse.getString("digit_text").trim().replace(" ", ""); 
+                        String digitText = jsonResponse.getString("digit_text").trim().replace(" ", "");
                         int score = jsonResponse.getInt("score");
                         String rating = jsonResponse.getString("rating");
 

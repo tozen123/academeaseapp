@@ -7,15 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".Activity.MainActivity"
     android:padding="46dp"
+    android:background="#adc1db"
     >
+    <ImageView
+        android:id="@+id/ico"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:src="@drawable/icon"
+        android:gravity="center"
+        android:layout_marginTop="50dp"
+       >
+
+    </ImageView>
     <TextView
         android:id="@+id/titleHeader"
-
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="AcademEase"
         android:gravity="center"
-        android:textSize="48dp"
+        android:textSize="40dp"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@+id/ico"
         >
 
     </TextView>
@@ -57,7 +70,7 @@
 
                 android:text="SCAN"
                 android:layout_marginTop="8dp"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="16sp"/>
         </LinearLayout>
 
@@ -86,7 +99,7 @@
 
                 android:text="ATTENDANCE"
                 android:layout_marginTop="8dp"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="16sp"/>
         </LinearLayout>
 
@@ -114,20 +127,21 @@
                 android:gravity="center"
                 android:text="REGISTER STUDENT"
                 android:layout_marginTop="8dp"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:textSize="16sp"/>
         </LinearLayout>
 
     </GridLayout>
     <TextView
         android:id="@+id/userEmailText"
-
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="%email%"
-        android:textSize="18dp"
+        android:text="Welcome %email%"
+        android:textSize="0dp"
         android:layout_marginTop="128dp"
         android:layout_below="@id/grid_layout"
+        android:gravity="center"
 
         >
 
@@ -137,9 +151,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/userEmailText"
-
-        android:text="Logout">
-
-
+        android:layout_centerHorizontal="true"
+        android:text="Logout"
+        android:textColor="#adc1db"
+        android:backgroundTint="#0e2262">
     </Button>
 </RelativeLayout>

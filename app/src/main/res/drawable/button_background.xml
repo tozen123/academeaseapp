@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Button background color -->
-    <solid android:color="@android:color/black" />
+    <solid android:color="#0e2262" />
 
     <!-- Rounded corners -->
     <corners android:radius="16dp" />
@@ -16,5 +16,5 @@
     <!-- Optional button border -->
     <stroke
         android:width="2dp"
-        android:color="@android:color/white" />
+        android:color="@android:color/black" />
 </shape>

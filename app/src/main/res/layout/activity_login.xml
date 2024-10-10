@@ -6,109 +6,109 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.LoginActivity"
-    android:padding="46dp"
-    >
+    android:background="#adc1db"
+    android:padding="46dp">
+
     <LinearLayout
         android:id="@+id/AppHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="vertical">
 
-        >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:src="@drawable/icon"
+            android:gravity="center" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Welcome to"
             android:gravity="center"
             android:textSize="46dp"
-            >
+            android:textColor="#0e2262" />
 
-        </TextView>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="AcademEase!"
             android:gravity="center"
             android:textSize="28dp"
-            >
-
-        </TextView>
+            android:textColor="#0e2262" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/LoginTitleHeader"
-
-
+        android:textColor="#55a0e1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login"
         android:gravity="center"
         android:textSize="38dp"
-
         android:layout_marginTop="56dp"
         android:textStyle="bold"
+        android:layout_below="@+id/AppHeader" />
 
-        android:layout_below="@+id/AppHeader"
-        >
-
-    </TextView>
-
+    <!-- Email Section with User Icon -->
     <LinearLayout
         android:id="@+id/EmailForm"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/LoginTitleHeader"
-        android:orientation="vertical"
-
+        android:orientation="horizontal"
         android:layout_margin="16dp"
-        >
+        android:gravity="center_vertical">
+
+        <!-- User Icon -->
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_user_icon"
+            android:layout_marginEnd="10dp" />
+
         <EditText
             android:id="@+id/EmailInputEditText"
-
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:textSize="21dp"
             android:hint="Email/Username"
-            android:background="@drawable/rounded_edit_text"
-            >
-
-        </EditText>
+            android:background="@drawable/rounded_edit_text" />
     </LinearLayout>
 
+    <!-- Password Section with Password Icon -->
     <LinearLayout
         android:id="@+id/PasswordForm"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/EmailForm"
-        android:orientation="vertical"
-
+        android:orientation="horizontal"
         android:layout_margin="16dp"
-        >
+        android:gravity="center_vertical">
+
+        <!-- Password Icon -->
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_password_icon"
+            android:layout_marginEnd="10dp" />
+
         <EditText
             android:id="@+id/PasswordInputEditText"
-
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:textSize="21dp"
             android:hint="Password"
-            android:background="@drawable/rounded_edit_text"
-            >
-
-        </EditText>
+            android:background="@drawable/rounded_edit_text" />
     </LinearLayout>
 
     <Button
         android:id="@+id/ButtonLogin"
-
+        android:backgroundTint="#0e2262"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:text="LOGIN"
-        android:layout_below="@+id/PasswordForm"
-
-        >
-
-    </Button>
+        android:layout_below="@+id/PasswordForm" />
 </RelativeLayout>

@@ -5,28 +5,28 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.ScanExamChooseTestActivity">
+    tools:context=".Activity.ScanExamChooseTestActivity"
+    android:background="#adc1db">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="AcademEase" />
+        android:background="#0e2262"
+        app:title="AcademEase"
+        app:titleTextColor="#ffffff"/>
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="46dp"
+        android:padding="0dp"
         android:layout_below="@+id/toolbar">
 
         <TextView
             android:id="@+id/titleHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Scan"
-            android:textSize="38dp"
             android:gravity="center" />
     </LinearLayout>
     <LinearLayout
@@ -52,7 +52,8 @@
             android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            />
     </LinearLayout>
 
 </RelativeLayout>

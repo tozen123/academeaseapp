@@ -3,11 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/round_border"
+    android:layout_marginBottom="20dp">
 
     <TextView
         android:id="@+id/testName"
         android:layout_width="wrap_content"
+        android:textColor="#ffffff"
         android:layout_height="wrap_content"
         android:text="Test Name"
         android:textSize="18sp"
@@ -15,6 +18,7 @@
 
     <TextView
         android:id="@+id/testDate"
+        android:textColor="#ffffff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Test Date"
@@ -22,6 +26,7 @@
 
     <TextView
         android:id="@+id/teacherName"
+        android:textColor="#ffffff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Teacher Name"
