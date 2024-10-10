@@ -28,6 +28,8 @@ import com.google.gson.Gson;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -404,14 +406,55 @@ public class ScanExamReadyActivity extends AppCompatActivity {
                             return;
                         }
 
-                        String resultMessage = "Exam Set: " + setVal + "\n"
-                                + "LRN: " + digitText + "\n"
-                                + "Score: " + score + "\n"
-                                + "Rating: " + rating;
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        db.collection("students")
+                                .whereEqualTo("lrn", digitText)
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String fName = document.getString("FName");
+                                            String lName = document.getString("LName");
+                                            String mName = document.getString("MName");
 
-                        Log.d("API Response", "Response: " + resultMessage);
+                                            String resultMessage = "Student: " + fName + " " + mName + " " + lName + "\n"
+                                                    + "Exam Set: " + setVal + "\n"
+                                                    + "LRN: " + digitText + "\n"
+                                                    + "Score: " + score + "\n"
+                                                    + "Rating: " + rating;
 
-                        showResultDialog("Success", resultMessage);
+                                            Log.d("API Response", "Response: " + resultMessage);
+
+                                            showResultDialog("Success", resultMessage);
+                                            String scannedDataId = db.collection("exam-results").document().getId();
+
+                                            String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+                                            String testName = "Test Name Here";
+
+                                            Map<String, Object> examResult = new HashMap<>();
+                                            examResult.put("date", currentDate);
+                                            examResult.put("testName", testName);
+                                            examResult.put("lrn", digitText);
+                                            examResult.put("name", fName + " " + mName + " " + lName);
+                                            examResult.put("examSet", setVal);
+                                            examResult.put("score", score);
+                                            examResult.put("scannedDataId", scannedDataId);
+
+                                            db.collection("exam-results")
+                                                    .document(scannedDataId)
+                                                    .set(examResult)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d("Firestore", "Exam result successfully uploaded!");
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e("Firestore", "Error uploading exam result", e);
+                                                    });
+                                        }
+                                    } else {
+                                        showResultDialog("Error", "Student with LRN: " + digitText + " not found.");
+                                    }
+                                });
 
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
