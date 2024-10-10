@@ -88,7 +88,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
     // Constants for SharedPreferences
     private static final String PREFS_NAME = "IPPrefs";
     private static final String KEY_IP_ADDRESS = "192.168.1.1";
-
+    String testDocId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +113,8 @@ public class ScanExamReadyActivity extends AppCompatActivity {
             String testName = getIntent().getStringExtra("testName");
             String selectedSet = getIntent().getStringExtra("selectedSet");
             String documentId = getIntent().getStringExtra("documentId");
+
+            testDocId = documentId;
 
             testNameTextView.setText("Test: " + testName);
             selectedSetTextView.setText("Selected Set: " + selectedSet);
@@ -435,6 +437,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
                                             Map<String, Object> examResult = new HashMap<>();
                                             examResult.put("date", currentDate);
                                             examResult.put("testName", testName);
+                                            examResult.put("testId", testDocId);
                                             examResult.put("lrn", digitText);
                                             examResult.put("name", fName + " " + mName + " " + lName);
                                             examResult.put("examSet", setVal);
