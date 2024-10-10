@@ -430,7 +430,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
 
                                             String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-                                            String testName = "Test Name Here";
+                                            String testName = testNameTextView.getText().toString();
 
                                             Map<String, Object> examResult = new HashMap<>();
                                             examResult.put("date", currentDate);
