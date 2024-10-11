@@ -428,31 +428,31 @@ public class ScanExamReadyActivity extends AppCompatActivity {
                                             Log.d("API Response", "Response: " + resultMessage);
 
                                             showResultDialog("Success", resultMessage);
-                                            String scannedDataId = db.collection("exam-results").document().getId();
-
-                                            String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
-                                            String testName = testNameTextView.getText().toString();
-
-                                            Map<String, Object> examResult = new HashMap<>();
-                                            examResult.put("date", currentDate);
-                                            examResult.put("testName", testName);
-                                            examResult.put("testId", testDocId);
-                                            examResult.put("lrn", digitText);
-                                            examResult.put("name", fName + " " + mName + " " + lName);
-                                            examResult.put("examSet", setVal);
-                                            examResult.put("score", score);
-                                            examResult.put("scannedDataId", scannedDataId);
-
-                                            db.collection("exam-results")
-                                                    .document(scannedDataId)
-                                                    .set(examResult)
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        Log.d("Firestore", "Exam result successfully uploaded!");
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        Log.e("Firestore", "Error uploading exam result", e);
-                                                    });
+//                                            String scannedDataId = db.collection("exam-results").document().getId();
+//
+//                                            String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+//
+//                                            String testName = testNameTextView.getText().toString();
+//
+//                                            Map<String, Object> examResult = new HashMap<>();
+//                                            examResult.put("date", currentDate);
+//                                            examResult.put("testName", testName);
+//                                            examResult.put("testId", testDocId);
+//                                            examResult.put("lrn", digitText);
+//                                            examResult.put("name", fName + " " + mName + " " + lName);
+//                                            examResult.put("examSet", setVal);
+//                                            examResult.put("score", score);
+//                                            examResult.put("scannedDataId", scannedDataId);
+//
+//                                            db.collection("exam-results")
+//                                                    .document(scannedDataId)
+//                                                    .set(examResult)
+//                                                    .addOnSuccessListener(aVoid -> {
+//                                                        Log.d("Firestore", "Exam result successfully uploaded!");
+//                                                    })
+//                                                    .addOnFailureListener(e -> {
+//                                                        Log.e("Firestore", "Error uploading exam result", e);
+//                                                    });
                                         }
                                     } else {
                                         showResultDialog("Error", "Student with LRN: " + digitText + " not found.");
