@@ -394,7 +394,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
                         String digitText = jsonResponse.getString("digit_text").trim().replace(" ", ""); 
                         int score = jsonResponse.getInt("score");
                         String rating = jsonResponse.getString("rating");
-
+                        String shaded_response = jsonResponse.getString("shaded_answers");
                         if (digitText.length() != 12) {
                             showResultDialog("Error", "OMR API Failed to read the LRN, please try to capture again");
                             return;
