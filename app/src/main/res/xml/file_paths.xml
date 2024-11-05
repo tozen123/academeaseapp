@@ -3,4 +3,6 @@
     <external-path
         name="my_images"
         path="Android/data/com.doublehammerstudio.academeaseapp/files/Pictures" />
+
+    <external-files-path name="images" path="Pictures/" />
 </paths>
