@@ -38,7 +38,19 @@
             android:layout_gravity="center"
             android:textColor="#ffffff"/>
 
+        <TextView
+            android:id="@+id/documentIdTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Document ID"
+            android:textSize="0sp" />
 
+        <TextView
+            android:id="@+id/testAnswerDocument"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answers: []"
+            android:textSize="0sp" />
 
         <TextView
             android:id="@+id/selectedSetTextView"
@@ -50,6 +62,11 @@
             android:layout_marginBottom="30dp"
             android:textColor="#ffffff"/>
 
+        <TextView
+            android:id="@+id/resultsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
 
 
 
