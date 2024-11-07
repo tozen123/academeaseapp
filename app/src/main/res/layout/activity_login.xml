@@ -74,6 +74,7 @@
             android:layout_weight="1"
             android:textSize="21dp"
             android:hint="Email/Username"
+            android:inputType="textEmailAddress"
             android:background="@drawable/rounded_edit_text" />
     </LinearLayout>
 
@@ -101,6 +102,7 @@
             android:layout_weight="1"
             android:textSize="21dp"
             android:hint="Password"
+            android:inputType="textPassword"
             android:background="@drawable/rounded_edit_text" />
     </LinearLayout>
 

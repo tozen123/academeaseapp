@@ -22,6 +22,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.doublehammerstudio.academeaseapp.Interfaces.ApiService;
 import com.doublehammerstudio.academeaseapp.R;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.gson.Gson;
@@ -73,6 +75,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 public class ScanExamReadyActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+
     private TextView testNameTextView;
     private TextView selectedSetTextView;
     private TextView documentIdTextView;
@@ -83,11 +86,17 @@ public class ScanExamReadyActivity extends AppCompatActivity {
     private Button testHelloButton;
     private TextView testAnswerDocument;
 
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
     private String currentIpAddress;
     // Constants for SharedPreferences
     private static final String PREFS_NAME = "IPPrefs";
     private static final String KEY_IP_ADDRESS = "192.168.1.1";
+
+    // Hardcoded IP address for automatic connection
+    private static final String API_BASE_URL = "http://192.168.0.101:5000/";
+
+    private String baseUrl = "http://192.168.0.101:5000/"; // Default URL in case Firebase retrieval fails
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,58 +124,18 @@ public class ScanExamReadyActivity extends AppCompatActivity {
             documentIdTextView.setText("Document ID: " + documentId);
 
             fetchAnswersOnActivityLoad(documentId, selectedSet);
-
+            fetchBaseUrlFromFirestore();
             showQuestionsButton.setOnClickListener(v1 -> {
                 fetchQuestionsAndShowDialog(documentId, selectedSet);
             });
 
             capturePhotoButton.setOnClickListener(v1 -> {
-
-
-                showIpInputDialog();
-
-
-//                dispatchTakePictureIntent();
+                dispatchTakePictureIntent();
             });
-//            testHelloButton = findViewById(R.id.testHelloButton);
-//            testHelloButton.setOnClickListener(v1 -> {
-//                testHelloEndpoint();
-//            });
             return insets;
         });
     }
-    private void showIpInputDialog() {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View dialogView = inflater.inflate(R.layout.dialog_ip_input, null);
-        final EditText ipEditText = dialogView.findViewById(R.id.ipEditText);
-        final CheckBox rememberCheckBox = dialogView.findViewById(R.id.rememberCheckBox);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String storedIp = sharedPreferences.getString(KEY_IP_ADDRESS, null);
-
-        if (storedIp != null) {
-            ipEditText.setText(storedIp);
-            rememberCheckBox.setChecked(true);
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle("Enter IP Address")
-                .setView(dialogView)
-                .setPositiveButton("OK", (dialog, which) -> {
-                    String ipAddress = ipEditText.getText().toString();
-                    boolean rememberIp = rememberCheckBox.isChecked();
-
-                    if (rememberIp) {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(KEY_IP_ADDRESS, ipAddress);
-                        editor.apply();
-                    }
-
-                    dispatchTakePictureIntent(ipAddress);
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
     private void fetchQuestionsAndShowDialog(String documentId, String selectedSet) {
         db.collection("tests").document(documentId).get().addOnSuccessListener(documentSnapshot -> {
             Log.d("Firestore", "Fetched document: " + documentSnapshot.getId());
@@ -529,8 +498,7 @@ public class ScanExamReadyActivity extends AppCompatActivity {
 
 
 
-    private void dispatchTakePictureIntent(String ipAddress) {
-        currentIpAddress = ipAddress;
+    private void dispatchTakePictureIntent() {
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -747,15 +715,36 @@ public class ScanExamReadyActivity extends AppCompatActivity {
 
 
 
-    private Retrofit createRetrofit() {
+    private void fetchBaseUrlFromFirestore() {
+        DocumentReference docRef = firestore.collection("API").document("documentID");
 
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String apiUrl = document.getString("omr");
+                    if (apiUrl != null) {
+                        baseUrl = apiUrl; // Set the base URL from Firestore
+                    }
+                } else {
+                    System.out.println("No such document! Using default URL.");
+                }
+            } else {
+                System.err.println("Failed to fetch document: " + task.getException());
+            }
+        });
+    }
+
+    private Retrofit createRetrofit() {
         return new Retrofit.Builder()
-                .baseUrl("http://" + currentIpAddress + ":5000/")
+                .baseUrl(baseUrl) // Use the dynamically retrieved or default base URL
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
 
-
+    public Retrofit getRetrofit() {
+        return createRetrofit();
+    }
 
 
     private void uploadTestImage(File imageFile) {

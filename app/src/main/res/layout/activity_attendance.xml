@@ -8,15 +8,6 @@
     tools:context=".Activity.AttendanceActivity">
 
     <!-- Button to Capture Image -->
-    <Button
-        android:id="@+id/capture_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Capture Attendance Image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp" />
 
     <!-- Loading ProgressBar -->
     <ProgressBar
@@ -24,9 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/capture_button"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

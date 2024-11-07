@@ -27,9 +27,6 @@
         android:theme="@style/Theme.AcademEaseApp"
         tools:targetApi="31">
         <activity
-            android:name=".Activity.StudentActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activity.ScanExamReadyActivity"
             android:exported="false"
             android:parentActivityName=".Activity.ScanExamChooseTestActivity" />
@@ -40,7 +37,8 @@
         <activity
             android:name=".Activity.RegisterStudentActivity"
             android:exported="false"
-            android:parentActivityName=".Activity.MainActivity" />
+            android:parentActivityName=".Activity.MainActivity"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".Activity.ScanExamChooseTestActivity"
             android:exported="false"

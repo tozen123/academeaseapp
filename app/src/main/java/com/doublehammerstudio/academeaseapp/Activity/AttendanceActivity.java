@@ -1,5 +1,7 @@
 package com.doublehammerstudio.academeaseapp.Activity;
 
+import static com.doublehammerstudio.academeaseapp.R.*;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -20,8 +22,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.doublehammerstudio.academeaseapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONObject;
@@ -29,8 +34,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -53,50 +62,46 @@ public class AttendanceActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "IPPrefs";
     private static final String KEY_IP_ADDRESS = "192.168.1.1";
 
+    // Set static IP address directly
+    private String facerecogIpAddress; // IP address to be retrieved from Firestore
     private Button captureButton;
     private ProgressBar loadingProgressBar;
     private String currentPhotoPath;
-    private String ipAddress;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance);
 
-        captureButton = findViewById(R.id.capture_button);
-        loadingProgressBar = findViewById(R.id.loading_progress);
 
-        captureButton.setOnClickListener(v -> showIpInputDialog());
+        loadingProgressBar = findViewById(R.id.loading_progress);
+        // Retrieve the IP address from Firestore and proceed to open the camera
+        retrieveFacerecogIpAddress();
     }
 
-    private void showIpInputDialog() {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View dialogView = inflater.inflate(R.layout.dialog_ip_input, null);
-        final EditText ipEditText = dialogView.findViewById(R.id.ipEditText);
-        final CheckBox rememberCheckBox = dialogView.findViewById(R.id.rememberCheckBox);
+    private void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String storedIp = sharedPreferences.getString(KEY_IP_ADDRESS, null);
+    private void retrieveFacerecogIpAddress() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        if (storedIp != null) {
-            ipEditText.setText(storedIp);
-            rememberCheckBox.setChecked(true);
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle("Enter IP Address")
-                .setView(dialogView)
-                .setPositiveButton("OK", (dialog, which) -> {
-                    ipAddress = ipEditText.getText().toString();
-                    if (rememberCheckBox.isChecked()) {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(KEY_IP_ADDRESS, ipAddress);
-                        editor.apply();
+        db.collection("API").document("documentID")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        facerecogIpAddress = documentSnapshot.getString("facerecog");
+                        if (facerecogIpAddress != null) {
+                            dispatchTakePictureIntent(); // Proceed to open the camera
+                        } else {
+                            showError("Facerecog IP address not found.");
+                        }
+                    } else {
+                        showError("Document does not exist.");
                     }
-                    dispatchTakePictureIntent();
                 })
-                .setNegativeButton("Cancel", null)
-                .show();
+                .addOnFailureListener(e -> showError("Error fetching IP address: " + e.getMessage()));
     }
 
     private void dispatchTakePictureIntent() {
@@ -146,7 +151,7 @@ public class AttendanceActivity extends AppCompatActivity {
         int timeout = 300;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://" + ipAddress + ":5000/")
+                .baseUrl(facerecogIpAddress) // Use the dynamically fetched IP address
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(new OkHttpClient.Builder()
                         .connectTimeout(timeout, TimeUnit.SECONDS)
@@ -179,12 +184,12 @@ public class AttendanceActivity extends AppCompatActivity {
                                 String lrn = result.optString("lrn");
                                 String imageUrl = result.optString("image_url");
 
-                                String message = "Match found:\n" +
+                                /*String message = "Match found:\n" +
                                         "First Name: " + fName + "\n" +
                                         "Last Name: " + lName + "\n" +
                                         "Middle Name: " + mName + "\n" +
                                         "LRN: " + lrn;
-                                showResultDialog("Success", message);
+                                showResultDialog("Success", message);*/
 
                                 queryStudentAndAddAttendanceRecord(fName, lName, mName, lrn, imageUrl);
                             }
@@ -213,6 +218,9 @@ public class AttendanceActivity extends AppCompatActivity {
     private void queryStudentAndAddAttendanceRecord(String fName, String lName, String mName, String lrn, String imageUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(Calendar.getInstance().getTime());
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
         db.collection("students")
                 .whereEqualTo("lrn", lrn)
                 .get()
@@ -221,8 +229,102 @@ public class AttendanceActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult().getDocuments().get(0);
                         String grade = document.getString("grade");
                         String section = document.getString("section");
+                        String string_lrn = document.getString("lrn");
+                        String studentDocumentId = document.getId(); // Retrieve the student document ID
 
-                        addAttendanceRecord(fName, lName, mName, lrn, grade, section, imageUrl);
+                        // Now, use the section to retrieve the teacher UID from the "sections" collection
+                        db.collection("sections")
+                                .whereEqualTo("day", currentDay)
+                                .whereEqualTo("section", section) // Filter by section
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (DocumentSnapshot sectionDocument : queryDocumentSnapshots) {
+                                        String startTimeStr = sectionDocument.getString("startTime");
+                                        String teacher_uid = sectionDocument.getString("teacherUID");
+
+                                        if (startTimeStr != null && teacher_uid != null) {
+                                            try {
+                                                // Confirm the startTime string
+                                                Toast.makeText(AttendanceActivity.this, "Start Time: " + startTimeStr, Toast.LENGTH_SHORT).show();
+
+                                                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                                                Calendar currentTime = Calendar.getInstance();
+
+                                                // Parse the start time and set it to today’s date
+                                                Calendar startTime = Calendar.getInstance();
+                                                startTime.setTime(timeFormat.parse(startTimeStr));
+                                                startTime.set(Calendar.YEAR, currentTime.get(Calendar.YEAR));
+                                                startTime.set(Calendar.MONTH, currentTime.get(Calendar.MONTH));
+                                                startTime.set(Calendar.DAY_OF_MONTH, currentTime.get(Calendar.DAY_OF_MONTH));
+
+                                                // Display the formatted current time
+                                                String currentTimeStr = timeFormat.format(currentTime.getTime());
+                                                Toast.makeText(AttendanceActivity.this, "Current Time: " + currentTimeStr, Toast.LENGTH_SHORT).show();
+
+                                                // Calculate the 30-minute attendance window before start time
+                                                Calendar attendanceWindowStart = (Calendar) startTime.clone();
+                                                attendanceWindowStart.add(Calendar.MINUTE, -30);
+
+                                                // Calculate the 15-minute window after start time
+                                                Calendar attendanceWindowEnd = (Calendar) startTime.clone();
+                                                attendanceWindowEnd.add(Calendar.MINUTE, 15);
+
+                                                // Now, check if the student already has an attendance record for today
+                                                db.collection("attendance")
+                                                        .whereEqualTo("section", section)
+                                                        .whereEqualTo("teacherUID", teacher_uid)
+                                                        .whereEqualTo("studentId", studentDocumentId)
+                                                        .get()
+                                                        .addOnSuccessListener(attendanceSnapshots -> {
+                                                            boolean hasAttendanceForToday = false;
+
+                                                            for (DocumentSnapshot attendanceDoc : attendanceSnapshots) {
+                                                                List<Map<String, Object>> attendanceEntries = (List<Map<String, Object>>) attendanceDoc.get("attendanceEntries");
+
+                                                                if (attendanceEntries != null) {
+                                                                    for (Map<String, Object> entry : attendanceEntries) {
+                                                                        String entryDate = (String) entry.get("date");
+                                                                        if (currentDate.equals(entryDate)) {
+                                                                            hasAttendanceForToday = true;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            // If the student does not have an attendance record for today, add it
+                                                            if (!hasAttendanceForToday) {
+                                                                String remarks = "absent"; // Default to absent
+                                                                if (!currentTime.before(attendanceWindowStart) && currentTime.before(startTime)) {
+                                                                    remarks = "present"; // Within the 30-minute window before start time
+                                                                } else if (!currentTime.before(startTime) && currentTime.before(attendanceWindowEnd)) {
+                                                                    remarks = "late"; // Within the 15-minute window after start time
+                                                                }
+
+                                                                // Add the attendance record
+                                                                addAttendanceRecord(fName, lName, mName, studentDocumentId, grade, section, imageUrl, remarks, string_lrn);
+                                                                Toast.makeText(AttendanceActivity.this, "Attendance recorded: " + remarks, Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                String message = "Attendance already recorded for today";
+                                                                showResultDialog("Success", message);
+
+                                                                Toast.makeText(AttendanceActivity.this, "Attendance already recorded for today", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            Toast.makeText(AttendanceActivity.this, "Error fetching attendance data", Toast.LENGTH_SHORT).show();
+                                                        });
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            Toast.makeText(AttendanceActivity.this, "Teacher UID or Start Time missing", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(AttendanceActivity.this, "Error fetching section data", Toast.LENGTH_SHORT).show();
+                                });
                     } else {
                         Log.w("Firestore", "No matching student found for LRN: " + lrn);
                         showResultDialog("Error", "Student record not found in Firestore.");
@@ -234,39 +336,82 @@ public class AttendanceActivity extends AppCompatActivity {
                 });
     }
 
-    private void addAttendanceRecord(String fName, String lName, String mName, String lrn, String grade, String section, String imageUrl) {
+
+
+    private void addAttendanceRecord(String fName, String lName, String mName, String studentDocumentId, String grade, String section, String imageUrl, String Remarks, String lrn) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Map<String, Object> attendanceData = new HashMap<>();
-        attendanceData.put("FName", fName);
-        attendanceData.put("LName", lName);
-        attendanceData.put("MName", mName);
-        attendanceData.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        attendanceData.put("grade", grade);
-        attendanceData.put("image", imageUrl);
-        attendanceData.put("remarks", "present");
-        attendanceData.put("section", section);
-        attendanceData.put("studentId", lrn);
-        attendanceData.put("timeIn", new SimpleDateFormat("HH:mm").format(new Date()));
+        // Create an entry for the attendance record
+        Map<String, Object> attendanceEntry = new HashMap<>();
+        attendanceEntry.put("timeIn", new SimpleDateFormat("HH:mm").format(new Date()));
+        attendanceEntry.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        attendanceEntry.put("remarks", Remarks);
 
+        String message = "Match found:\n" +
+                "First Name: " + fName + "\n" +
+                "Last Name: " + lName + "\n" +
+                "Middle Name: " + mName + "\n" +
+                "LRN: " + lrn +
+                "Remarks: " + Remarks;
+        showResultDialog("Success", message);
+
+
+        // Set up the main document if it doesn't exist and add attendance to the array
         db.collection("attendance")
-                .add(attendanceData)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore", "Attendance record added with ID: " + documentReference.getId());
+                .document(studentDocumentId)
+                .update("attendanceEntries", FieldValue.arrayUnion(attendanceEntry))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Attendance record added for student ID: " + studentDocumentId);
                 })
                 .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Error adding attendance record", e);
+                    if (e instanceof FirebaseFirestoreException &&
+                            ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.NOT_FOUND) {
+
+                        // Document does not exist, create a new one with the array
+                        Map<String, Object> newAttendanceData = new HashMap<>();
+                        newAttendanceData.put("FName", fName);
+                        newAttendanceData.put("LName", lName);
+                        newAttendanceData.put("MName", mName);
+                        newAttendanceData.put("grade", grade);
+                        newAttendanceData.put("section", section);
+                        newAttendanceData.put("studentId", studentDocumentId);
+                        newAttendanceData.put("teacherUID", getCurrentUserUID());
+                        newAttendanceData.put("attendanceEntries", Arrays.asList(attendanceEntry));
+                        newAttendanceData.put("image", imageUrl);// Initialize with the first entry
+
+                        db.collection("attendance")
+                                .document(studentDocumentId)
+                                .set(newAttendanceData)
+                                .addOnSuccessListener(innerVoid -> Log.d("Firestore", "New attendance document created with ID: " + studentDocumentId))
+                                .addOnFailureListener(innerE -> Log.w("Firestore", "Error creating new attendance document", innerE));
+                    } else {
+                        Log.w("Firestore", "Error updating attendance record", e);
+                    }
                 });
     }
+
+
+
+    private String getCurrentUserUID() {
+        // Replace this with actual code to get the current logged-in user's UID
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
+
 
 
     private void showResultDialog(String title, String message) {
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    // Navigate back to the main menu
+                    Intent intent = new Intent(AttendanceActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();  // Close the current activity
+                })
                 .show();
     }
+
     private interface ApiService {
         @Multipart
         @POST("upload_image")

@@ -5,10 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.RegisterStudentActivity"
-
-
-    >
+    tools:context=".Activity.RegisterStudentActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -49,6 +46,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fillViewport="true">
             >
             <LinearLayout
                 android:id="@+id/content_container"
@@ -114,7 +112,8 @@
                     android:id="@+id/sex_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Sex" />
+                    android:hint="Gender" />
+
                 <EditText
                     android:id="@+id/birthdate_edittext"
                     android:layout_width="match_parent"
@@ -142,6 +141,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Address" />
+                <EditText
+                    android:id="@+id/contact_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contact Number"
+                    android:inputType="number"/>
+                <EditText
+                    android:id="@+id/email_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email Address"
+                    android:inputType="textEmailAddress"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -171,7 +182,20 @@
                     android:id="@+id/contact_number_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Contact Number (Parent/Guardian)" />
+                    android:hint="Contact Number (Parent/Guardian)"
+                    android:inputType="number"/>
+                <EditText
+                    android:id="@+id/grade_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Grade"
+                    android:inputType="number"/>
+                <EditText
+                    android:id="@+id/acad_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Acad Year"
+                    android:inputType="number"/>
 
 
                 <Spinner
