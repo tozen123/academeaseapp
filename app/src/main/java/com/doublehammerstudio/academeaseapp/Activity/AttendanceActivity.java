@@ -14,13 +14,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.doublehammerstudio.academeaseapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,6 +31,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.Source;
 
 import org.json.JSONObject;
 
@@ -68,15 +72,28 @@ public class AttendanceActivity extends AppCompatActivity {
     private ProgressBar loadingProgressBar;
     private String currentPhotoPath;
 
+    private Button buttonScanAgain;
+    private Button buttonBackToMainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance);
 
-
+        buttonScanAgain = findViewById(R.id.buttonScanAgain);
+        buttonBackToMainMenu = findViewById(R.id.buttonBackToMainMenu);
         loadingProgressBar = findViewById(R.id.loading_progress);
         // Retrieve the IP address from Firestore and proceed to open the camera
+        // Set click listener for Scan Again button
+        buttonScanAgain.setOnClickListener(v -> dispatchTakePictureIntent());
+
+        // Set click listener for Back to Main Menu button
+        buttonBackToMainMenu.setOnClickListener(v -> {
+            Intent mainMenuIntent = new Intent(AttendanceActivity.this, MainActivity.class);
+            startActivity(mainMenuIntent);
+            finish(); // Optional: closes AttendanceActivity after starting MainActivity
+        });
+
         retrieveFacerecogIpAddress();
     }
 
@@ -214,12 +231,13 @@ public class AttendanceActivity extends AppCompatActivity {
             }
         });
     }
-
+    // Assuming `currentUserID` is the logged-in user's ID from Firebase Auth
     private void queryStudentAndAddAttendanceRecord(String fName, String lName, String mName, String lrn, String imageUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(Calendar.getInstance().getTime());
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime());
+        String currentTeacherUID = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current teacher's UID
 
         db.collection("students")
                 .whereEqualTo("lrn", lrn)
@@ -236,89 +254,95 @@ public class AttendanceActivity extends AppCompatActivity {
                         db.collection("sections")
                                 .whereEqualTo("day", currentDay)
                                 .whereEqualTo("section", section) // Filter by section
+                                .whereEqualTo("teacherUID", currentTeacherUID) // Filter by current teacher's UID
                                 .get()
                                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                                    for (DocumentSnapshot sectionDocument : queryDocumentSnapshots) {
-                                        String startTimeStr = sectionDocument.getString("startTime");
-                                        String teacher_uid = sectionDocument.getString("teacherUID");
+                                    if (queryDocumentSnapshots.isEmpty()) {
+                                        // If no sections are found, prompt the user to register the student
+                                        showErrorDialog("Sorry, no face detected. Please register!");
+                                    } else {
+                                        for (DocumentSnapshot sectionDocument : queryDocumentSnapshots) {
+                                            String startTimeStr = sectionDocument.getString("startTime");
+                                            String teacher_uid = sectionDocument.getString("teacherUID");
 
-                                        if (startTimeStr != null && teacher_uid != null) {
-                                            try {
-                                                // Confirm the startTime string
-                                                Toast.makeText(AttendanceActivity.this, "Start Time: " + startTimeStr, Toast.LENGTH_SHORT).show();
+                                            if (startTimeStr != null && teacher_uid != null) {
+                                                try {
+                                                    // Confirm the startTime string
+                                                    Toast.makeText(AttendanceActivity.this, "Start Time: " + startTimeStr, Toast.LENGTH_SHORT).show();
 
-                                                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                                                Calendar currentTime = Calendar.getInstance();
+                                                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                                                    Calendar currentTime = Calendar.getInstance();
 
-                                                // Parse the start time and set it to today’s date
-                                                Calendar startTime = Calendar.getInstance();
-                                                startTime.setTime(timeFormat.parse(startTimeStr));
-                                                startTime.set(Calendar.YEAR, currentTime.get(Calendar.YEAR));
-                                                startTime.set(Calendar.MONTH, currentTime.get(Calendar.MONTH));
-                                                startTime.set(Calendar.DAY_OF_MONTH, currentTime.get(Calendar.DAY_OF_MONTH));
+                                                    // Parse the start time and set it to today’s date
+                                                    Calendar startTime = Calendar.getInstance();
+                                                    startTime.setTime(timeFormat.parse(startTimeStr));
+                                                    startTime.set(Calendar.YEAR, currentTime.get(Calendar.YEAR));
+                                                    startTime.set(Calendar.MONTH, currentTime.get(Calendar.MONTH));
+                                                    startTime.set(Calendar.DAY_OF_MONTH, currentTime.get(Calendar.DAY_OF_MONTH));
 
-                                                // Display the formatted current time
-                                                String currentTimeStr = timeFormat.format(currentTime.getTime());
-                                                Toast.makeText(AttendanceActivity.this, "Current Time: " + currentTimeStr, Toast.LENGTH_SHORT).show();
+                                                    // Display the formatted current time
+                                                    String currentTimeStr = timeFormat.format(currentTime.getTime());
+                                                    Toast.makeText(AttendanceActivity.this, "Current Time: " + currentTimeStr, Toast.LENGTH_SHORT).show();
 
-                                                // Calculate the 30-minute attendance window before start time
-                                                Calendar attendanceWindowStart = (Calendar) startTime.clone();
-                                                attendanceWindowStart.add(Calendar.MINUTE, -30);
+                                                    // Calculate the 30-minute attendance window before start time
+                                                    Calendar attendanceWindowStart = (Calendar) startTime.clone();
+                                                    attendanceWindowStart.add(Calendar.MINUTE, -30);
 
-                                                // Calculate the 15-minute window after start time
-                                                Calendar attendanceWindowEnd = (Calendar) startTime.clone();
-                                                attendanceWindowEnd.add(Calendar.MINUTE, 15);
+                                                    // Calculate the 15-minute window after start time
+                                                    Calendar attendanceWindowEnd = (Calendar) startTime.clone();
+                                                    attendanceWindowEnd.add(Calendar.MINUTE, 15);
 
-                                                // Now, check if the student already has an attendance record for today
-                                                db.collection("attendance")
-                                                        .whereEqualTo("section", section)
-                                                        .whereEqualTo("teacherUID", teacher_uid)
-                                                        .whereEqualTo("studentId", studentDocumentId)
-                                                        .get()
-                                                        .addOnSuccessListener(attendanceSnapshots -> {
-                                                            boolean hasAttendanceForToday = false;
+                                                    // Now, check if the student already has an attendance record for today
+                                                    db.collection("attendance")
+                                                            .whereEqualTo("section", section)
+                                                            .whereEqualTo("teacherUID", teacher_uid)
+                                                            .whereEqualTo("studentId", studentDocumentId)
+                                                            .get()
+                                                            .addOnSuccessListener(attendanceSnapshots -> {
+                                                                boolean hasAttendanceForToday = false;
 
-                                                            for (DocumentSnapshot attendanceDoc : attendanceSnapshots) {
-                                                                List<Map<String, Object>> attendanceEntries = (List<Map<String, Object>>) attendanceDoc.get("attendanceEntries");
+                                                                for (DocumentSnapshot attendanceDoc : attendanceSnapshots) {
+                                                                    List<Map<String, Object>> attendanceEntries = (List<Map<String, Object>>) attendanceDoc.get("attendanceEntries");
 
-                                                                if (attendanceEntries != null) {
-                                                                    for (Map<String, Object> entry : attendanceEntries) {
-                                                                        String entryDate = (String) entry.get("date");
-                                                                        if (currentDate.equals(entryDate)) {
-                                                                            hasAttendanceForToday = true;
-                                                                            break;
+                                                                    if (attendanceEntries != null) {
+                                                                        for (Map<String, Object> entry : attendanceEntries) {
+                                                                            String entryDate = (String) entry.get("date");
+                                                                            if (currentDate.equals(entryDate)) {
+                                                                                hasAttendanceForToday = true;
+                                                                                break;
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
-                                                            }
 
-                                                            // If the student does not have an attendance record for today, add it
-                                                            if (!hasAttendanceForToday) {
-                                                                String remarks = "absent"; // Default to absent
-                                                                if (!currentTime.before(attendanceWindowStart) && currentTime.before(startTime)) {
-                                                                    remarks = "present"; // Within the 30-minute window before start time
-                                                                } else if (!currentTime.before(startTime) && currentTime.before(attendanceWindowEnd)) {
-                                                                    remarks = "late"; // Within the 15-minute window after start time
+                                                                // If the student does not have an attendance record for today, add it
+                                                                if (!hasAttendanceForToday) {
+                                                                    String remarks = "absent"; // Default to absent
+                                                                    if (!currentTime.before(attendanceWindowStart) && currentTime.before(startTime)) {
+                                                                        remarks = "present"; // Within the 30-minute window before start time
+                                                                    } else if (!currentTime.before(startTime) && currentTime.before(attendanceWindowEnd)) {
+                                                                        remarks = "late"; // Within the 15-minute window after start time
+                                                                    }
+
+                                                                    // Add the attendance record
+                                                                    addAttendanceRecord(fName, lName, mName, studentDocumentId, grade, section, imageUrl, remarks, string_lrn);
+                                                                    Toast.makeText(AttendanceActivity.this, "Attendance recorded: " + remarks, Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    String message = "Attendance already recorded for today";
+                                                                    showResultDialog("Success", message);
+
+                                                                    Toast.makeText(AttendanceActivity.this, "Attendance already recorded for today", Toast.LENGTH_SHORT).show();
                                                                 }
-
-                                                                // Add the attendance record
-                                                                addAttendanceRecord(fName, lName, mName, studentDocumentId, grade, section, imageUrl, remarks, string_lrn);
-                                                                Toast.makeText(AttendanceActivity.this, "Attendance recorded: " + remarks, Toast.LENGTH_SHORT).show();
-                                                            } else {
-                                                                String message = "Attendance already recorded for today";
-                                                                showResultDialog("Success", message);
-
-                                                                Toast.makeText(AttendanceActivity.this, "Attendance already recorded for today", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        })
-                                                        .addOnFailureListener(e -> {
-                                                            Toast.makeText(AttendanceActivity.this, "Error fetching attendance data", Toast.LENGTH_SHORT).show();
-                                                        });
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
+                                                            })
+                                                            .addOnFailureListener(e -> {
+                                                                Toast.makeText(AttendanceActivity.this, "Error fetching attendance data", Toast.LENGTH_SHORT).show();
+                                                            });
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            } else {
+                                                Toast.makeText(AttendanceActivity.this, "Teacher UID or Start Time missing", Toast.LENGTH_SHORT).show();
                                             }
-                                        } else {
-                                            Toast.makeText(AttendanceActivity.this, "Teacher UID or Start Time missing", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 })
@@ -326,8 +350,8 @@ public class AttendanceActivity extends AppCompatActivity {
                                     Toast.makeText(AttendanceActivity.this, "Error fetching section data", Toast.LENGTH_SHORT).show();
                                 });
                     } else {
-                        Log.w("Firestore", "No matching student found for LRN: " + lrn);
-                        showResultDialog("Error", "Student record not found in Firestore.");
+                        // If no student record found, prompt the user to register the student
+                        showErrorDialog("Sorry, no face detected. Please register!");
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -336,9 +360,23 @@ public class AttendanceActivity extends AppCompatActivity {
                 });
     }
 
+    // Method to show the error message with an "Okay" button
+    private void showErrorDialog(String message) {
+        new AlertDialog.Builder(AttendanceActivity.this)
+                .setTitle("Error")
+                .setMessage(message)
+                .setPositiveButton("Okay", (dialog, which) -> {
+                    dialog.dismiss(); // Close the dialog when "Okay" is pressed
+                })
+                .show();
+    }
 
 
-    private void addAttendanceRecord(String fName, String lName, String mName, String studentDocumentId, String grade, String section, String imageUrl, String Remarks, String lrn) {
+
+
+
+    private void addAttendanceRecord(String fName, String lName, String mName, String studentDocumentId,
+                                     String grade, String section, String imageUrl, String Remarks, String lrn) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Create an entry for the attendance record
@@ -347,14 +385,26 @@ public class AttendanceActivity extends AppCompatActivity {
         attendanceEntry.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         attendanceEntry.put("remarks", Remarks);
 
-        String message = "Match found:\n" +
-                "First Name: " + fName + "\n" +
-                "Last Name: " + lName + "\n" +
-                "Middle Name: " + mName + "\n" +
-                "LRN: " + lrn +
-                "Remarks: " + Remarks;
-        showResultDialog("Success", message);
+        // Display the data in XML layout
+        TextView textFirstName = findViewById(R.id.textFirstName);
+        TextView textLastName = findViewById(R.id.textLastName);
+        TextView textMiddleName = findViewById(R.id.textMiddleName);
+        TextView textLRN = findViewById(R.id.textLRN);
+        TextView textRemark = findViewById(R.id.textRemark);
+        ImageView studentImage = findViewById(R.id.studentImage);
 
+        textFirstName.setText("First Name: " + fName);
+        textLastName.setText("Last Name: " + lName);
+        textMiddleName.setText("Middle Name: " + mName);
+        textLRN.setText("LRN: " + lrn);
+        textRemark.setText("Remarks: " + Remarks);
+
+        // Load student image with Glide or Picasso
+        Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_default_image) // optional placeholder image
+                .error(R.drawable.ic_default_image) // optional error image
+                .into(studentImage);
 
         // Set up the main document if it doesn't exist and add attendance to the array
         db.collection("attendance")
@@ -389,6 +439,7 @@ public class AttendanceActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
 
 

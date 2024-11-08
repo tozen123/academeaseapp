@@ -50,7 +50,6 @@
             >
             <LinearLayout
                 android:id="@+id/content_container"
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -125,17 +124,9 @@
                     android:id="@+id/age_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Age" />
-                <EditText
-                    android:id="@+id/birthplace_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Birth Of Place" />
-                <EditText
-                    android:id="@+id/ip_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="IP (Specific and Ethnic Group)" />
+                    android:hint="Age"
+                    android:inputType="number"/>
+
                 <EditText
                     android:id="@+id/address_edittext"
                     android:layout_width="match_parent"
@@ -153,37 +144,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Email Address"
                     android:inputType="textEmailAddress"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:text="Name Of Parent Section"
-                    android:textSize="18sp"
-
-                    android:textStyle="bold"
-                    android:layout_marginTop="20dp" />
-                <EditText
-                    android:id="@+id/father_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Father" />
-                <EditText
-                    android:id="@+id/mother_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Mother(Maiden Name)" />
-                <EditText
-                    android:id="@+id/guardian_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Guardian if not parent" />
-                <EditText
-                    android:id="@+id/contact_number_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Contact Number (Parent/Guardian)"
-                    android:inputType="number"/>
                 <EditText
                     android:id="@+id/grade_edittext"
                     android:layout_width="match_parent"
@@ -197,11 +157,21 @@
                     android:hint="Acad Year"
                     android:inputType="number"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
 
+                    android:text="Select Section"
+                    android:textSize="18sp"
+
+                    android:textStyle="bold"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="16dp"/>
                 <Spinner
                     android:id="@+id/section_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     />
 
                 <Button

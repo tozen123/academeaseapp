@@ -151,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
                                 if (currentTime.after(attendanceWindowStart) && currentTime.before(attendanceWindowEnd)) {
                                     // Enable button for the first valid subject found
                                     isWithinAttendanceWindow = true;
-                                    Toast.makeText(MainActivity.this, "Within attendance window", Toast.LENGTH_SHORT).show();
                                 }
 
                                 // If current time is more than 15 minutes after the start time, mark student as absent
@@ -223,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         attendanceButton.setEnabled(false);
                         attendanceButton.setAlpha(0.5f); // Disable button and gray out
-                        Toast.makeText(MainActivity.this, "Outside attendance window", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {

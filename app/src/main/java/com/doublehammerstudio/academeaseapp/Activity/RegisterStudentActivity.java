@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 import com.doublehammerstudio.academeaseapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -147,13 +148,23 @@ public class RegisterStudentActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Student registered without photo", Toast.LENGTH_SHORT).show();
             }
+            Intent intent = new Intent(RegisterStudentActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+            startActivity(intent);
+            finish(); // Ensure the RegisterStudentActivity is removed from the stack
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Error registering student", Toast.LENGTH_SHORT).show();
         });
     }
 
+
+
     private void fetchSections() {
-        Query sectionsQuery = firestore.collection("sections");
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Query sections where the teacherUID field matches the currentUserID
+        Query sectionsQuery = firestore.collection("sections").whereEqualTo("teacherUID", currentUserID);
+
         sectionsQuery.addSnapshotListener((querySnapshot, error) -> {
             if (error != null) {
                 Toast.makeText(this, "Error fetching sections", Toast.LENGTH_SHORT).show();
@@ -170,6 +181,7 @@ public class RegisterStudentActivity extends AppCompatActivity {
             populateSpinner(sectionsList);
         });
     }
+
 
     private void populateSpinner(List<String> sectionsList) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,

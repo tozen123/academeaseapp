@@ -5,10 +5,107 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="20dp"
     tools:context=".Activity.AttendanceActivity">
 
-    <!-- Button to Capture Image -->
+    <!-- Student ImageView centered horizontally -->
+    <ImageView
+        android:id="@+id/studentImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="Student Image"
+        android:src="@drawable/ic_default_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
 
+    <!-- First Name TextView -->
+    <TextView
+        android:id="@+id/textFirstName"
+        android:layout_width="0dp"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="First Name: "
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/studentImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- Last Name TextView -->
+    <TextView
+        android:id="@+id/textLastName"
+        android:layout_width="0dp"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="Last Name: "
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/textFirstName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Middle Name TextView -->
+    <TextView
+        android:id="@+id/textMiddleName"
+        android:layout_width="0dp"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="Middle Name: "
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/textLastName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- LRN TextView -->
+    <TextView
+        android:id="@+id/textLRN"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="LRN: "
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/textMiddleName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Remark TextView -->
+    <TextView
+        android:id="@+id/textRemark"
+        android:layout_width="0dp"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="Remark: "
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/textLRN"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Scan Again Button -->
+    <Button
+        android:id="@+id/buttonScanAgain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Scan Again"
+        app:layout_constraintTop_toBottomOf="@id/textRemark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- Back to Main Menu Button -->
+    <Button
+        android:id="@+id/buttonBackToMainMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Back to Main Menu"
+        app:layout_constraintTop_toBottomOf="@id/buttonScanAgain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
     <!-- Loading ProgressBar -->
     <ProgressBar
         android:id="@+id/loading_progress"

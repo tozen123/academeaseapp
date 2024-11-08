@@ -15,6 +15,7 @@ import com.doublehammerstudio.academeaseapp.Models.TestItem;
 import com.doublehammerstudio.academeaseapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,7 @@ public class ScanExamChooseTestActivity extends AppCompatActivity {
     private TestAdapter testAdapter;
     private ArrayList<TestItem> testList = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +33,8 @@ public class ScanExamChooseTestActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Show the back button
-        getSupportActionBar().setHomeButtonEnabled(true); // Enable the button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -40,6 +42,7 @@ public class ScanExamChooseTestActivity extends AppCompatActivity {
         testAdapter = new TestAdapter(testList);
         recyclerView.setAdapter(testAdapter);
 
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Get the current user ID
         fetchTests();
 
         testAdapter.setOnItemClickListener(testItem -> showSetSelectionDialog(testItem));
@@ -49,12 +52,16 @@ public class ScanExamChooseTestActivity extends AppCompatActivity {
         db.collection("tests").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    String testName = document.getString("name");
-                    String testDate = document.getString("date");
                     String createdBy = document.getString("createdBy");
-                    String documentId = document.getId();  // Get document ID
 
-                    fetchTeacherInfo(createdBy, testName, testDate, documentId);
+                    // Only process the test if it was created by the current user
+                    if (createdBy != null && createdBy.equals(currentUserId)) {
+                        String testName = document.getString("name");
+                        String testDate = document.getString("date");
+                        String documentId = document.getId();
+
+                        fetchTeacherInfo(createdBy, testName, testDate, documentId);
+                    }
                 }
             } else {
                 Log.e("Firestore", "Error getting documents.", task.getException());
@@ -69,13 +76,11 @@ public class ScanExamChooseTestActivity extends AppCompatActivity {
                 String lastName = documentSnapshot.getString("lastName");
                 String fullName = firstName + " " + lastName;
 
-                // Add the test item with documentId to the list
                 testList.add(new TestItem(testName, testDate, fullName, documentId));
                 testAdapter.notifyDataSetChanged();
             }
         });
     }
-
 
     private void showSetSelectionDialog(TestItem testItem) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -96,5 +101,4 @@ public class ScanExamChooseTestActivity extends AppCompatActivity {
         intent.putExtra("documentId", testItem.getDocumentId());
         startActivity(intent);
     }
-
 }
